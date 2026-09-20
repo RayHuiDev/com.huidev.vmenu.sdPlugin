@@ -38,6 +38,8 @@ A Stream Deck plugin for controlling vMenu actions in FiveM.
 4. Join your FiveM server.
 5. Press the Stream Deck key to perform the selected action.
 
+**Requires server to have https://github.com/RayHuiDev/sd_vmenu/ installed**
+
 ## Available actions
 
 * Spawn Saved Vehicle
