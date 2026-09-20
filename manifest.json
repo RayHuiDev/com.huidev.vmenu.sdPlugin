@@ -1,0 +1,96 @@
+{
+  "Name": "vMenu Stream Deck",
+  "Version": "0.1.0",
+  "Author": "Huidev",
+  "Description": "Streamdeck hotkeys for the FiveM Resource vMenu",
+  "UUID": "com.huidev.vmenu",
+  "Icon": "img/icon",
+  "CodePath": "src/plugin.js",
+  "SDKVersion": 3,
+  "Software": {
+    "MinimumVersion": "7.1"
+  },
+  "Nodejs": {
+    "Version": "24"
+  },
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Category": "vMenu Stream Deck",
+  "CategoryIcon": "img/icon",
+  "Actions": [
+    {
+      "Icon": "img/icon",
+      "Name": "Spawn Saved Vehicle",
+      "States": [
+        {
+          "Image": "img/action",
+          "Title": "Saved\nVehicle",
+          "TitleAlignment": "middle"
+        }
+      ],
+      "UUID": "com.huidev.vmenu.spawn-saved-vehicle",
+      "Tooltip": "Spawn selected vMenu saved vehicle",
+      "PropertyInspectorPath": "pi/saved_vehicle.html"
+    },
+    {
+      "Icon": "img/icon",
+      "Name": "Spawn Saved Ped",
+      "States": [
+        {
+          "Image": "img/action",
+          "Title": "Saved\nPed",
+          "TitleAlignment": "middle"
+        }
+      ],
+      "UUID": "com.huidev.vmenu.spawn-saved-ped",
+      "Tooltip": "Spawn selected vMenu saved ped",
+      "PropertyInspectorPath": "pi/saved_ped.html"
+    },
+    {
+      "Icon": "img/icon",
+      "Name": "Spawn Saved MP Ped",
+      "States": [
+        {
+          "Image": "img/action",
+          "Title": "Saved\nMP Ped",
+          "TitleAlignment": "middle"
+        }
+      ],
+      "UUID": "com.huidev.vmenu.spawn-saved-mp-ped",
+      "Tooltip": "Spawn selected vMenu saved MP ped",
+      "PropertyInspectorPath": "pi/saved_mp_ped.html"
+    },
+    {
+      "Icon": "img/icon",
+      "Name": "Vehicle Extra",
+      "States": [
+        {
+          "Image": "img/action",
+          "Title": "Vehicle\nExtra",
+          "TitleAlignment": "middle"
+        }
+      ],
+      "UUID": "com.huidev.vmenu.vehicle-extra",
+      "Tooltip": "Toggle/set fixed vehicle extras 1-12 on your current vehicle",
+      "PropertyInspectorPath": "pi/vehicle_extra.html"
+    },
+    {
+      "Icon": "img/icon",
+      "Name": "Teleport Option",
+      "States": [
+        {
+          "Image": "img/action",
+          "Title": "Teleport",
+          "TitleAlignment": "middle"
+        }
+      ],
+      "UUID": "com.huidev.vmenu.teleport-option",
+      "Tooltip": "Teleport to selected configured option",
+      "PropertyInspectorPath": "pi/teleport.html"
+    }
+  ]
+}
