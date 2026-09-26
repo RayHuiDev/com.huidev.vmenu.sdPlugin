@@ -6,11 +6,17 @@ const os = require('os');
 const LOCAL_PORT = 28197;
 const DEFAULTS = { action: 'spawn_saved_vehicle' };
 const ACTION_BY_UUID = {
-  'com.hui.vmenu.spawn_saved_vehicle': 'spawn-saved-vehicle',
-  'com.hui.vmenu.spawn_saved_ped': 'spawn-saved-ped',
-  'com.hui.vmenu.spawn_saved_mp_ped': 'spawn-saved-mp-ped',
-  'com.hui.vmenu.vehicle_extra': 'vehicle-extra',
-  'com.hui.vmenu.teleport_option': 'teleport-option'
+  'com.huidev.vmenu.spawn-saved-vehicle': 'spawn_saved_vehicle',
+  'com.huidev.vmenu.spawn-saved-ped': 'spawn_saved_ped',
+  'com.huidev.vmenu.spawn-saved-mp-ped': 'spawn_saved_mp_ped',
+  'com.huidev.vmenu.vehicle-extra': 'vehicle_extra',
+  'com.huidev.vmenu.teleport-option': 'teleport_option',
+  // Retain support for keys created with the original plugin UUIDs.
+  'com.hui.vmenu.spawn_saved_vehicle': 'spawn_saved_vehicle',
+  'com.hui.vmenu.spawn_saved_ped': 'spawn_saved_ped',
+  'com.hui.vmenu.spawn_saved_mp_ped': 'spawn_saved_mp_ped',
+  'com.hui.vmenu.vehicle_extra': 'vehicle_extra',
+  'com.hui.vmenu.teleport_option': 'teleport_option'
 };
 const POLL_TIMEOUT_MS = 25000;
 const MAX_QUEUE = 50;
@@ -27,6 +33,7 @@ const registerEvent = arg('-registerEvent');
 
 let sd = null;
 const contexts = new Map();
+const pendingSaves = new Map();
 let lastGame = null;
 let savedVehicles = [];
 let savedPeds = [];
@@ -55,7 +62,8 @@ function actionLabel(a) { return String(a || '').replace(/_/g, ' ').replace(/\b\
 function getActionForContext(context, settings) {
   const entry = contexts.get(context) || {};
   const fixed = ACTION_BY_UUID[entry.actionUUID];
-  return fixed || (settings && settings.action) || entry.settings?.action || DEFAULTS.action;
+  // Older property inspectors saved hyphenated action names. FiveM uses underscores.
+  return String(fixed || (settings && settings.action) || entry.settings?.action || DEFAULTS.action).replace(/-/g, '_');
 }
 
 function updateTitles() {
@@ -447,26 +455,26 @@ refreshSavedMpPedsFromDisk(); return sendJson(res, 200, { ...result, count: save
 async function runAction(context, settings) {
   const action = getActionForContext(context, settings || {});
   let args = (settings && settings.args) || contexts.get(context)?.settings?.args || {};
-  if (action === 'spawn-saved-vehicle') {
+  if (action === 'spawn_saved_vehicle') {
     const savedVehicleId = settings?.savedVehicleId || contexts.get(context)?.settings?.savedVehicleId || '';
     if (!savedVehicles.length) refreshSavedVehiclesFromDisk();
 refreshSavedPedsFromDisk();
 refreshSavedMpPedsFromDisk();
     const savedVehicle = savedVehicles.find(v => v.id === savedVehicleId || v.key === savedVehicleId) || null;
     args = { ...args, savedVehicleId, savedVehicleData: savedVehicle ? savedVehicle.raw : null, savedVehicleName: savedVehicle ? savedVehicle.name : '' };
-  } else if (action === 'spawn-saved-ped') {
+  } else if (action === 'spawn_saved_ped') {
     const savedPedId = settings?.savedPedId || contexts.get(context)?.settings?.savedPedId || '';
     if (!savedPeds.length) refreshSavedPedsFromDisk();
     const savedPed = savedPeds.find(v => v.id === savedPedId || v.key === savedPedId) || null;
     args = { ...args, savedPedId, savedPedData: savedPed ? savedPed.raw : null, savedPedName: savedPed ? savedPed.name : '' };
-  } else if (action === 'spawn-saved-mp-ped') {
+  } else if (action === 'spawn_saved_mp_ped') {
     const savedMpPedId = settings?.savedMpPedId || contexts.get(context)?.settings?.savedMpPedId || '';
     if (!savedMpPeds.length) refreshSavedMpPedsFromDisk();
     const savedMpPed = savedMpPeds.find(v => v.id === savedMpPedId || v.key === savedMpPedId) || null;
     args = { ...args, savedMpPedId, savedMpPedData: savedMpPed ? savedMpPed.raw : null, savedMpPedName: savedMpPed ? savedMpPed.name : '' };
-  } else if (action === 'vehicle-extra') {
+  } else if (action === 'vehicle_extra') {
     args = { ...args, extra: Number(settings?.extra || contexts.get(context)?.settings?.extra || 1), mode: settings?.mode || contexts.get(context)?.settings?.mode || 'toggle' };
-  } else if (action === 'teleport-option') {
+  } else if (action === 'teleport_option') {
     args = { ...args, teleportId: settings?.teleportId || contexts.get(context)?.settings?.teleportId || '' };
   }
   if (!isGameOnline()) { showAlert(context); updateTitles(); return; }
@@ -491,14 +499,33 @@ function connectStreamDeck() {
     let msg; try { msg = JSON.parse(ev.data); } catch { return; }
     const context = msg.context;
     if (msg.event === 'willAppear') { contexts.set(context, { actionUUID: msg.action, settings: msg.payload?.settings || {} }); updateTitles(); }
-    else if (msg.event === 'willDisappear') { contexts.delete(context); }
-    else if (msg.event === 'didReceiveSettings') { const old = contexts.get(context) || {}; contexts.set(context, { ...old, settings: msg.payload?.settings || {} }); updateTitles(); }
+    else if (msg.event === 'willDisappear') { contexts.delete(context); pendingSaves.delete(context); }
+    else if (msg.event === 'didReceiveSettings') {
+      const old = contexts.get(context) || {};
+      const settings = msg.payload?.settings || {};
+      let pending = pendingSaves.get(context);
+      if (pending && Date.now() > pending.expiresAt) {
+        pendingSaves.delete(context);
+        pending = null;
+      }
+      const confirmed = pending && Object.entries(pending.settings).every(([key, value]) => JSON.stringify(settings[key]) === JSON.stringify(value));
+      // A getSettings response sent before Save can arrive after the save request.
+      if (pending && !confirmed) return;
+      contexts.set(context, { ...old, actionUUID: msg.action || old.actionUUID, settings });
+      if (confirmed) {
+        pendingSaves.delete(context);
+        send({ event: 'sendToPropertyInspector', action: msg.action || old.actionUUID, context, payload: { event: 'settingsSaved', requestId: pending.requestId, settings } });
+      }
+      updateTitles();
+    }
     else if (msg.event === 'sendToPlugin' && msg.payload && msg.payload.settings) {
       const target = msg.payload.context || msg.context;
       const old = contexts.get(target) || contexts.get(context) || {};
       const merged = { ...(old.settings || {}), ...msg.payload.settings };
-      contexts.set(target, { ...old, settings: merged });
+      contexts.set(target, { ...old, actionUUID: msg.action || old.actionUUID, settings: merged });
+      if (msg.payload.requestId) pendingSaves.set(target, { requestId: msg.payload.requestId, settings: merged, expiresAt: Date.now() + 5000 });
       send({ event: 'setSettings', context: target, payload: merged });
+      if (msg.payload.requestId) send({ event: 'getSettings', context: target });
       updateTitles();
     }
     else if (msg.event === 'keyDown') { const old = contexts.get(context) || { actionUUID: msg.action, settings: {} }; contexts.set(context, { ...old, actionUUID: msg.action }); await runAction(context, msg.payload?.settings || old.settings || DEFAULTS); }

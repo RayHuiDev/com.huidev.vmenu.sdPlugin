@@ -1,222 +1,25 @@
 <!doctype html>
-<html><head><meta charset="utf-8"/><title>Teleport Option</title>
-<style>
-:root {
-  --bg: #0d1017;
-  --bg-soft: #121722;
-  --panel: rgba(24, 29, 42, 0.92);
-  --panel-strong: rgba(31, 38, 55, 0.98);
-  --text: #f5f7fb;
-  --muted: #aeb8c8;
-  --muted-2: #7f8aa0;
-  --border: rgba(255, 255, 255, 0.10);
-  --border-strong: rgba(255, 255, 255, 0.18);
-  --accent: #7c5cff;
-  --accent-2: #1fd1f9;
-  --success: #53e0a5;
-  --warning: #ffd166;
-  --shadow: 0 12px 30px rgba(0, 0, 0, 0.30);
-  color-scheme: dark;
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-  min-height: 100%;
-}
-
-body {
-  margin: 0;
-  padding: 14px;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: var(--text);
-  background:
-    radial-gradient(circle at 12% -10%, rgba(124, 92, 255, 0.34), transparent 34%),
-    radial-gradient(circle at 100% 0%, rgba(31, 209, 249, 0.14), transparent 32%),
-    linear-gradient(180deg, #111622 0%, var(--bg) 100%);
-  overflow-x: hidden;
-}
-
-body > p:first-of-type {
-  margin: 0 0 12px;
-  padding: 12px 13px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(124, 92, 255, 0.18), rgba(31, 209, 249, 0.08)), var(--panel);
-  box-shadow: var(--shadow);
-  letter-spacing: 0.2px;
-}
-
-body > p:first-of-type b {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-body > p:first-of-type b::before {
-  content: "";
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 0 18px rgba(124, 92, 255, 0.7);
-  flex: 0 0 auto;
-}
-
-.hint {
-  margin: 9px 0 0;
-  padding: 10px 11px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.045);
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.45;
-  opacity: 1;
-}
-
-label {
-  display: block;
-  margin-top: 13px;
-  color: #d9e0ef;
-  font-size: 12px;
-  font-weight: 750;
-  letter-spacing: 0.18px;
-}
-
-select,
-input,
-button {
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 7px;
-  border-radius: 11px;
-  font: inherit;
-}
-
-select,
-input {
-  min-height: 34px;
-  padding: 8px 11px;
-  border: 1px solid var(--border-strong);
-  background-color: rgba(8, 11, 18, 0.88);
-  color: var(--text);
-  outline: none;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 7px 18px rgba(0,0,0,0.18);
-  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
-}
-
-select {
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: 32px;
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
-    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-  background-position:
-    calc(100% - 18px) 15px,
-    calc(100% - 12px) 15px;
-  background-size: 6px 6px, 6px 6px;
-  background-repeat: no-repeat;
-}
-
-select:hover,
-input:hover {
-  border-color: rgba(255, 255, 255, 0.28);
-  background-color: rgba(11, 15, 24, 0.96);
-}
-
-select:focus,
-input:focus {
-  border-color: rgba(124, 92, 255, 0.92);
-  box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.18), inset 0 1px 0 rgba(255,255,255,0.05);
-}
-
-input[type="number"] {
-  text-align: right;
-}
-
-option {
-  background: #121722;
-  color: var(--text);
-}
-
-button {
-  min-height: 36px;
-  padding: 9px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: linear-gradient(135deg, rgba(124, 92, 255, 0.95), rgba(31, 209, 249, 0.72));
-  color: #ffffff;
-  font-weight: 800;
-  letter-spacing: 0.18px;
-  cursor: pointer;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.2);
-  transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
-}
-
-button:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 13px 28px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255,255,255,0.25);
-}
-
-button:active {
-  transform: translateY(1px);
-  filter: brightness(0.96);
-}
-
-.status {
-  min-height: 1.5em;
-  margin: 12px 0 0;
-  padding: 9px 10px;
-  border: 1px solid rgba(31, 209, 249, 0.18);
-  border-radius: 12px;
-  background: rgba(31, 209, 249, 0.07);
-  color: #d8f6ff;
-  font-size: 12px;
-  line-height: 1.4;
-  opacity: 1;
-}
-
-code {
-  padding: 1px 5px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.25);
-  color: #dfe7ff;
-}
-
-::-webkit-scrollbar { width: 9px; }
-::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.26); }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; }
-}
-</style>
-</head><body>
-<p><b>vMenu Stream Deck</b></p><p class="hint">Select a teleport location.</p>
-<label>Teleport location<select id="item"><option value="">Loading...</option></select></label>
-<button id="refresh">Refresh list</button><p id="status" class="status"></p>
-<script>
-let websocket=null, piUuid=null, actionInfo={}, settings={}, items=[];
-const statusEl=document.getElementById('status'); const refreshBtn=document.getElementById('refresh');
-function connectElgatoStreamDeckSocket(inPort,inUUID,inRegisterEvent,inInfo,inActionInfo){
-  piUuid=inUUID; try{actionInfo=JSON.parse(inActionInfo||'{}')}catch(_ ){actionInfo={}}
-  settings={...(actionInfo.payload&&actionInfo.payload.settings?actionInfo.payload.settings:{})};
-  websocket=new WebSocket('ws://127.0.0.1:'+inPort);
-  websocket.onopen=()=>{ websocket.send(JSON.stringify({event:inRegisterEvent,uuid:piUuid})); websocket.send(JSON.stringify({event:'getSettings',context:piUuid})); loadItems(false); };
-  websocket.onmessage=(evt)=>{ let msg; try{msg=JSON.parse(evt.data)}catch(_){return} if(msg.event==='didReceiveSettings'){ settings={...settings,...(msg.payload&&msg.payload.settings?msg.payload.settings:{})}; applySettings(); } };
-}
-function send(obj){ if(websocket&&websocket.readyState===WebSocket.OPEN) websocket.send(JSON.stringify(obj)); }
-function targetContexts(){ const out=[piUuid]; const c=actionInfo.context || (actionInfo.payload&&actionInfo.payload.context); if(c && c!==piUuid) out.push(c); return out; }
-function persist(extra){ settings={...settings,...extra,action:'teleport-option'}; for(const c of targetContexts()) send({event:'setSettings',context:c,payload:settings}); send({event:'sendToPlugin',context:piUuid,payload:{settings,context:actionInfo.context}}); }
-async function fetchJson(url){ const r=await fetch(url,{cache:'no-store'}); return await r.json(); }
-async function loadItems(forceSave){ statusEl.textContent='Refreshing...'; try{ const data=await fetchJson('http://127.0.0.1:28197/teleports'); items=data.teleports||data.items||[]; const el=document.getElementById('item'); const previous=settings.teleportId||el.value||''; el.innerHTML=''; if(!items.length){el.innerHTML='<option value="">None found</option>'; statusEl.textContent='0 found'; persist({teleportId:''}); return;} for(const it of items){ const o=document.createElement('option'); o.value=it.id||it.key||it.name||''; o.textContent=it.name||it.model||it.id||'Item'; el.appendChild(o);} if(previous&&Array.from(el.options).some(o=>o.value===previous)) el.value=previous; else el.selectedIndex=0; statusEl.textContent=items.length+' found. Selected: '+(el.options[el.selectedIndex]?.textContent||'none'); if(forceSave || !settings.teleportId || settings.teleportId!==el.value) save(); }catch(e){ statusEl.textContent='Bridge unavailable at 127.0.0.1:28197'; } }
-function applySettings(){ const el=document.getElementById('item'); if(settings.teleportId&&Array.from(el.options).some(o=>o.value===settings.teleportId)) el.value=settings.teleportId; }
-const itemEl=document.getElementById('item'); function save(){ const selected=items.find(it=>(it.id||it.key||it.name)===itemEl.value)||null; persist({teleportId:itemEl.value,teleportName:selected?(selected.name||selected.model||itemEl.value):''}); } itemEl.addEventListener('change',()=>{save(); statusEl.textContent='Selected: '+(itemEl.options[itemEl.selectedIndex]?.textContent||'none');});
-refreshBtn.addEventListener('click',e=>{e.preventDefault();loadItems(true)});
-window.addEventListener('beforeunload',()=>{ save(); });
-</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teleport Option</title>
+  <link rel="stylesheet" href="inspector.css">
+</head>
+<body data-action="teleport_option" data-endpoint="/teleports" data-list-key="teleports" data-id-setting="teleportId" data-name-setting="teleportName">
+  <div class="sdpi-item">
+    <label class="sdpi-item-label" for="item">Location</label>
+    <select class="sdpi-item-value" id="item"><option value="">Loading...</option></select>
+  </div>
+  <div class="sdpi-item">
+    <span class="sdpi-item-label" aria-hidden="true"></span>
+    <button class="sdpi-item-value" id="refresh" type="button">Refresh list</button>
+  </div>
+  <div class="sdpi-item">
+    <span class="sdpi-item-label" aria-hidden="true"></span>
+    <button class="sdpi-item-value" id="save" type="button" disabled>Save</button>
+  </div>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+  <script src="inspector.js"></script>
+</body>
+</html>
