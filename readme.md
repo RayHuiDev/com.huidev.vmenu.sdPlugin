@@ -22,18 +22,6 @@ A Stream Deck plugin for controlling vMenu actions in FiveM.
 
 4. Find **vMenu Stream Deck** in the Stream Deck action list.
 
-## Updating an existing installation
-
-1. Completely close Stream Deck and replace its installed `com.huidev.vmenu.sdPlugin` folder with this updated folder, including `pi/inspector.css` and `pi/inspector.js`.
-2. Replace the server's `sd_vmenu` resource with this updated folder and run `restart sd_vmenu` in the server console.
-3. Open Stream Deck again. Existing keys and selections can stay in place.
-
-The property inspectors now use plain gray controls and compact label rows. Action names sent to FiveM use underscores (for example, `vehicle_extra`). Previously saved hyphenated names remain supported. The plugin also resolves each key using the action UUIDs in its manifest, so a new Vehicle Extra key no longer falls back to the saved-vehicle action.
-
-## Development checks
-
-From the folder containing both resources, run `node --test tests/actions.test.cjs tests/inspector.test.cjs`. These tests simulate key events, saving and reading back settings, and unavailable lists. Run `lua tests/client-appearance.test.lua` with Lua 5.4+ for tattoo and hair-overlay regressions. Confirm the actual vehicle, ped, and teleport behavior in a live FiveM session after installing.
-
 ## How to use
 
 1. Drag a **vMenu Stream Deck** action onto a Stream Deck key.

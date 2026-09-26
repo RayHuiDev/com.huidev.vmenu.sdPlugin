@@ -11,7 +11,6 @@ const ACTION_BY_UUID = {
   'com.huidev.vmenu.spawn-saved-mp-ped': 'spawn_saved_mp_ped',
   'com.huidev.vmenu.vehicle-extra': 'vehicle_extra',
   'com.huidev.vmenu.teleport-option': 'teleport_option',
-  // Retain support for keys created with the original plugin UUIDs.
   'com.hui.vmenu.spawn_saved_vehicle': 'spawn_saved_vehicle',
   'com.hui.vmenu.spawn_saved_ped': 'spawn_saved_ped',
   'com.hui.vmenu.spawn_saved_mp_ped': 'spawn_saved_mp_ped',
@@ -62,7 +61,6 @@ function actionLabel(a) { return String(a || '').replace(/_/g, ' ').replace(/\b\
 function getActionForContext(context, settings) {
   const entry = contexts.get(context) || {};
   const fixed = ACTION_BY_UUID[entry.actionUUID];
-  // Older property inspectors saved hyphenated action names. FiveM uses underscores.
   return String(fixed || (settings && settings.action) || entry.settings?.action || DEFAULTS.action).replace(/-/g, '_');
 }
 
@@ -408,7 +406,6 @@ refreshSavedMpPedsFromDisk(); return sendJson(res, 200, { ...result, count: save
         const body = await readBody(req);
         lastGame = { ...body, ts: Date.now(), iso: new Date().toISOString() };
         if (Array.isArray(body.savedVehicles) && body.savedVehicles.length) savedVehicles = body.savedVehicles;
-        // Keep vehicle extras static (1-12). Do not overwrite with the current vehicle's extras.
         if (Array.isArray(body.teleports)) teleports = body.teleports;
         gameOnlineUntil = Date.now() + 15000;
         updateTitles();
@@ -509,7 +506,6 @@ function connectStreamDeck() {
         pending = null;
       }
       const confirmed = pending && Object.entries(pending.settings).every(([key, value]) => JSON.stringify(settings[key]) === JSON.stringify(value));
-      // A getSettings response sent before Save can arrive after the save request.
       if (pending && !confirmed) return;
       contexts.set(context, { ...old, actionUUID: msg.action || old.actionUUID, settings });
       if (confirmed) {

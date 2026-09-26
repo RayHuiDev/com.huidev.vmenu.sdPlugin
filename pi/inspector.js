@@ -26,8 +26,6 @@ function updateSaveButton() {
 
 function send(event, payload) {
   if (!connected()) return false;
-  // PI socket commands must use the UUID registered on this connection.
-  // The key's context belongs in the payload for the plugin to persist its settings.
   websocket.send(JSON.stringify({ event, action: actionInfo.action, context: piUuid, ...(payload === undefined ? {} : { payload }) }));
   return true;
 }
@@ -64,7 +62,6 @@ function save() {
   const requestId = `${piUuid}-${++requestSequence}`;
   pendingSave = requestId;
   statusEl.textContent = 'Saving...';
-  // Let the plugin persist the action's settings and confirm a Stream Deck readback.
   send('sendToPlugin', { settings, context: actionInfo.context || piUuid, requestId });
   saveTimer = setTimeout(() => {
     if (pendingSave !== requestId) return;
@@ -112,7 +109,6 @@ async function loadItems() {
       if (previous) itemEl.value = previous;
       statusEl.textContent = 'Choose an item, then click Save.';
     }
-    // Refreshing must never overwrite a key with an empty or different selection.
   } catch (_) {
     statusEl.textContent = 'Could not refresh the list. Your saved selection is unchanged.';
   } finally {
@@ -172,4 +168,3 @@ if (extraEl) {
   refreshBtn.addEventListener('click', loadItems);
 }
 saveBtn.addEventListener('click', save);
-// No unload save: an unavailable list must not erase the existing selection.
